@@ -41,7 +41,26 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    raise NotImplementedError
+
+    # Create a set "moves" #
+    moves = set()
+
+    # Iteratively check every box #
+    for i in range(3):
+        for j in range(3):
+
+            # Check if box is EMPTY #
+            if (board[i][j] == "EMPTY"):
+
+                # Add to the set #
+                moves.add((i, j))
+
+    # Check if set is empty i.e. terminal state #
+    if moves == set():
+        return None
+
+    # Else return all possible moves #
+    return moves
 
 
 def result(board, action):
