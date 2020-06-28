@@ -22,7 +22,19 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    raise NotImplementedError
+
+    # Initialize the counter #
+    cnt = 0
+
+    # Count the empty boxes in the grid #
+    for lst in board:
+        cnt += lst.count("EMPTY")
+
+    # Return the player #
+    if (cnt % 2 == 0):
+        return O
+    else:
+        return X
 
 
 def actions(board):
