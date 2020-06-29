@@ -162,4 +162,48 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    raise NotImplementedError
+
+    # Defining Maximizing Function #
+    def alphabeta(board, alpha, beta, maximizingPlayer):
+        # If Board is in Terminal State #
+        if terminal(board):
+            return None
+
+        # Maximizing Player #
+        if maximizingPlayer :
+            value = -2
+
+            # Check for every action possible #
+            for act in actions(board):
+                value = max(value, alphabeta(board, alpha, beta, False)[0])
+                alpha = max(alpha, value)
+
+                # Prunning #
+                if (alpha >= beta):
+                    break
+                # Get the possibel action #
+                px = act[0]
+                py = act[1]
+            return value, (px, py)
+
+        # Minimizing Player #
+        else
+            value = 2
+
+            # Check for every action possible #
+            for act in actions(board):
+                value = min(value, alphabeta(board, alpha, beta, TRUE)[0])
+                beta = min(beta, value)
+
+                # Prunning #
+                if beta ≤ alpha then
+                    break
+
+                # Get the possibel action #
+                px = act[0]
+                py = act[1]
+
+            return value, (px, py)
+
+        # Optimal Move #
+        return alphabeta(board = board, alpha = -5, beta = 5, False)[1]
