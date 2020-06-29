@@ -129,8 +129,8 @@ def terminal(board):
     """
 
     # Check if we have a Winner  #
-    winner = winner(board)
-    if (winner == "X" or winner == "O"):
+    Winner = winner(board)
+    if (Winner == "X" or Winner == "O"):
         return True
 
     # Check if Board is completely filled #
@@ -145,7 +145,17 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    raise NotImplementedError
+
+    # Get the winner #
+    Winner = winner(board)
+
+    # return the Winner #
+    if (Winner == "X"):
+        return 1
+    elif (Winner == "O"):
+        return -1
+    else:
+        return 0
 
 
 def minimax(board):
