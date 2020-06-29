@@ -85,12 +85,42 @@ def result(board, action):
     # Return the resulting board #
     return boardcopy
 
+
 def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    raise NotImplementedError
 
+    # Check Rows #
+    def checkRow(board, player):
+        for i in range(3):
+            if(board[i][0] == player and board[i][1] == player and
+                board[i][2] == player): return player
+
+    # Check Cols #
+    def checkCols(board, player):
+        for i in range(3):
+            if(board[0][i] == player and board[1][i] == player and
+                board[2][i] == player): return player
+
+    # Check Diagonals #
+    def checkDiags(board, player):
+        if(board[0][0] == player and board[1][1] == player and
+            board[2][2] == player): return player
+        if(board[2][0] == player and board[1][1] == player and
+            board[0][2] == player): return player
+
+    # Check for X #
+    checkRow(board, "X")
+    checkCols(board, "X")
+    checkDiags(board, "X")
+
+    # Check for X #
+    checkRow(board, "Y")
+    checkCols(board, "Y")
+    checkDiags(board, "Y")
+
+    return None
 
 def terminal(board):
     """
