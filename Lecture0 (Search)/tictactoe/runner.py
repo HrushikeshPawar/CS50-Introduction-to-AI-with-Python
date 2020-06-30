@@ -98,9 +98,9 @@ while True:
             if winner is None:
                 title = "Game Over: Tie."
             else:
-                title = "Game Over: {winner} wins."
+                title = "Game Over: {} wins.".format(winner)
         elif user == player:
-            title = "Play as {user}"
+            title = "Play as {}".format(user)
         else:
             title = "Computer thinking..."
         title = largeFont.render(title, True, white)
