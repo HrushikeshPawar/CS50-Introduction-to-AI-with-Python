@@ -69,9 +69,9 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
     # check if the action is valid #
-    if (board[action[0]][action[1]] is not None):
-        raise Exception("Invalid Action !")
-        return
+    if (board[action[0]][action[1]] != None):
+        raise ValueError("Invalid Action !")
+        #return
 
     # Create a DeepCopy of the Board #
     boardcopy = deepcopy(board)
