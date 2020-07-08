@@ -105,7 +105,10 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        raise NotImplementedError
+
+        # If the number of elements in the set "cells" is equal to the count #
+        if (len(self.set) == count):
+            return self.set
 
     def known_safes(self):
         """
