@@ -204,7 +204,54 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+
+        """         Part 1          """
+        # Add the cell to the moves_made set #
+        self.moves_made.add(cell)
+
+
+
+        """         Part 2          """
+        # Add the cell to the self.safes set #
+        self.safes.add(cell)
+
+        # Update this in all the Sentences #
+        mark_safe(self, cell)
+
+
+
+        """         Part 3          """
+        places = set()
+
+        # Loop over all the neighbors of the given cell #
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+
+                # Ignore the cell itself
+                if (i, j) == cell:
+                    continue
+
+                # Our neighbor #
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    neighbor = (cell[0] + (i - 1), cell[0] + (j - 1))
+
+                    # Check if the neighbor is already in moves_made #
+                    if ((i, j) in self.moves_made):
+                        continue
+
+                    # Check if the neighbor is a known mine #
+                    elif ((i, j) in self.mines):
+                        count -= 1
+                        continue
+
+                    # Atlast add it to the places #
+                    else:
+                        places.add((i, j))
+
+        # After going throuh all neighbors add a sentence to knowledge base #
+        self.knowledge.append(Sentence(places, count))
+
+
 
     def make_safe_move(self):
         """
