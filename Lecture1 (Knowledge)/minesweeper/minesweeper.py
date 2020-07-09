@@ -1,5 +1,6 @@
 import itertools
 import random
+import copy
 
 
 class Minesweeper():
@@ -250,6 +251,45 @@ class MinesweeperAI():
 
         # After going throuh all neighbors add a sentence to knowledge base #
         self.knowledge.append(Sentence(places, count))
+
+
+        """         Part 4          """
+        def part4():
+            # Iterate over all the sentences in knowledge base #
+            for sent in deepcopy(self.knowledge):
+                # If the count is empty all cells in sentence are safe #
+                if (sent.count == 0):
+                    for cell in sent.cells:
+                        # Mark as Safe #
+                        self.mark_safe(cell)
+                # If the len of sentence is equal to count all cells are safe #
+                elif (len(sent.cells) == sent.count):
+                    for cell in sent.cells:
+                        # Mark as Mine #
+                        self.mark_mine(cell)
+
+        part4()
+
+
+        """         Part 5          """
+        # Deepcopy of the Knowledge Base #
+        known = deepcopy(self.knowledge)
+
+        # Iterate over whole knowledge base for Sets and its Subsets #
+        for Set in known:
+            for Subset in known:
+                # Check if both are not same and Set is bigger that Subset#
+                if ((Set != Subset) and (len(Set.cells) >= len(Subset.cells)) and Subset.issubset(Set)):
+                    # Then get the Set - Subset #
+                    newset = Set.cells.difference(Subset.cells)
+                    newcount = Set.count - Subset.count
+
+                    #  Add to the Knowledge Base #
+                    self.knowledge.add(newset, newcount)
+
+                    # Again run part4 #
+                    part4()
+
 
 
 
