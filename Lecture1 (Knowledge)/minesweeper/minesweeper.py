@@ -285,12 +285,10 @@ class MinesweeperAI():
                     newcount = Set.count - Subset.count
 
                     #  Add to the Knowledge Base #
-                    self.knowledge.add(newset, newcount)
+                    self.knowledge.add(Sentence(newset, newcount))
 
                     # Again run part4 #
                     part4()
-
-
 
 
     def make_safe_move(self):
@@ -302,7 +300,16 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+
+        # Iterate moves in self.safes #
+        for cell in self.safes:
+            # Check if move is not made #
+            if (cell not in self.moves_made):
+                return cell
+
+        # If no safe cell known #
+        return None
+
 
     def make_random_move(self):
         """
