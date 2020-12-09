@@ -1,6 +1,7 @@
 import csv
 import itertools
 import sys
+import math
 
 PROBS = {
 
@@ -139,9 +140,118 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    raise NotImplementedError
+    one_gene = {"Harry"}
+    two_genes = {"James"}
+    have_trait = {"James"}
 
+    #Define a list to store all family probabilities
+    fam_prob = list()
 
+    #Probabilities of getting genes from parents
+    def parents_gene(n):
+        mom = people[person]['mother']
+        dad = people[person]['father']
+        mut = PROBS["mutation"]
+
+        if ((mom in two_genes) and (dad in two_genes)):
+            if n == 2:
+                return (1-mut)*(1-mut)
+            if n == 1:
+                return (1-mut)*mut*2
+            if n == 0:
+                return mut*mut
+        if (((mom in two_genes) and (dad in one_genes)) or ((mom in one_gene) and (dad in two_genes))):
+            if n == 2:
+                return (1-mut)*0.5
+            if n == 1:
+                return (1-mut)*0.5 + 0.5*mut
+            if n == 0:
+                return 0.1*0.1
+        if ((mom in two_genes) or (dad in two_genes)):
+            if n == 2:
+                return (1-mut)*mut
+            if n == 1:
+                return (1-mut)*(1-mut) + mut*mut
+            if n == 0:
+                return mut*(1-mut)
+        if ((mom in one_gene) and (dad in one_gene)):
+            if n == 2:
+                return 0.5*0.5
+            if n == 1:
+                return 2*0.5*0.5
+            if n == 0:
+                return 0.5*0.5
+        if ((mom in one_gene) or (dad in one_gene)):
+            if n == 2:
+                return 0.5*mut
+            if n == 1:
+                return 0.5*(1-mut) + 0.5*mut
+            if n == 0:
+                return 0.5*(1-mut)
+        else:
+            if n == 2:
+                return mut*mut
+            if n == 1:
+                return (1-mut)*mut + mut*(1-mut)
+            if n == 0:
+                return (1-mut)*(1-mut)
+    
+
+    #Loop through all peoples in the family
+    for person in people:
+        
+        #Let probability at start be 0 for everyone
+        prob = 0
+
+        #If person has no parents
+        if (people[person]['mother'] is None):
+            #Check if the person has 2 genes
+            if person in two_genes and person in have_trait:
+                prob = PROBS["gene"][2] * PROBS["trait"][2][True]
+                
+            elif person in two_genes and person not in have_trait:
+                prob = PROBS["gene"][2] * PROBS["trait"][2][False]
+            
+            elif person in one_gene and person in have_trait:
+                prob = PROBS["gene"][1] * PROBS["trait"][1][True]
+
+            elif person in one_gene and person not in have_trait:
+                prob = PROBS["gene"][1] * PROBS["trait"][1][False]
+
+            elif person in have_trait:
+                prob = PROBS["gene"][0] * PROBS["trait"][0][True]
+            
+            else:
+                prob = PROBS["gene"][0] * PROBS["trait"][0][False]
+        
+        #If person has parents
+        else:
+
+            if person in two_genes and person in have_trait:
+                prob = parents_gene(2) * PROBS["trait"][2][True]
+
+            elif person in two_genes and person not in have_trait:
+                prob = parents_gene(2) * PROBS["trait"][2][False]
+            
+            elif person in one_gene and person in have_trait:
+                prob = parents_gene(1) * PROBS["trait"][1][True]
+
+            elif person in one_gene and person not in have_trait:
+                prob = parents_gene(1) * PROBS["trait"][1][False]
+                
+            elif person in have_trait:
+                prob = parents_gene(0) * PROBS["trait"][0][True]
+            
+            else:
+                prob = parents_gene(0) * PROBS["trait"][0][False]
+    
+        #Add the probability to the list
+        fam_prob.append(prob)
+    
+   
+    return math.prod(fam_prob)
+
+        
 def update(probabilities, one_gene, two_genes, have_trait, p):
     """
     Add to `probabilities` a new joint probability `p`.
