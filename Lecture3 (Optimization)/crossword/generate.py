@@ -99,7 +99,6 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        
         for variable in self.domains:
             domain = list(self.domains[variable])
             for value in domain:
@@ -116,21 +115,30 @@ class CrosswordCreator():
         False if no revision was made.
         """
         
-        # Get characters which overlaps
-        i = self.crossword.overlaps[x, y][0]
-        j = self.crossword.overlaps[x, y][1]
+
+        # Check if variables overlaps
+        overlap = self.crossword.overlaps[x, y]
+
+        if overlap is None:
+            return False
 
         flag = 0
         flag1 = 0
+        remove_values = list()
+
         for word1 in self.domains[x]:
             for word2 in self.domains[y]:
-                if word1[i] == word2[j]:
+                if word1[overlap[0]] == word2[overlap[1]]:
                    flag1 = 1
                    break
             if flag1 != 1:
-                self.domains[x].remove(word1)
+                remove_values.append(word1)
                 flag = 1
         
+        if remove_values != []:
+            for value in remove_values:
+                self.domains[x].remove(value)
+            
         # Check if revision is made
         if flag == 0:
             return False
@@ -148,40 +156,18 @@ class CrosswordCreator():
         """
         
         # Check if the 'arcs' is empty
-        if arcs = None:
+        if arcs == None:
             arcs = list()
             for variable in self.crossword.variables:
-                for var in seld.crossword.variables:
-                    if variable != var:
-                        arcs.append((variable, var))
+                for var in self.crossword.neighbors(variable):
+                    arcs.append((variable, var))
 
-        # Loop untile queue is empty
-        while(len(arcs) != 0):
-
-            # Revise arc in arcs
-            for arc in arcs:
-                result = Revise(arc[0], arc[1])
-                
-                # If the arc has been revised
-                if result:
-                   
-                    # Check if Domain is empty
-                    if len(self.domains[arc[0]]) == 0:
-                        return False
-                    
-                    # Add all neighbours to the arcs
-                    for neighbour in self.crossword.neighbors(arc[0]):
-                        # Skip arc[1] from neighbour
-                        if neighbour == arc[1]: continue
-                        else:
-                            arcs.append((arc[0], neighbour))
-                            arcs.append((neighbour, arc[0]))
-                
-                # Remove arc from arcs
-                arcs.remove(arc)
-            
-        # Successfully checked all arcs are consistent
-        return True
+        for x, y in arcs:
+           if self.revise(x, y):
+               for neighbour in self.crossword.neighbors(x):
+                   arcs.append((x, neighbour))
+        
+        return len(self.domains[x]) > 0
 
     def assignment_complete(self, assignment):
         """
@@ -189,11 +175,9 @@ class CrosswordCreator():
         crossword variable); return False otherwise.
         """
         
-        # Read values of all varibles in the assignment
-        for variable in assignment:
-            if len(assignment[variable]) == 0:
-                return False
-        
+        # Compare length of assignment and length of domains
+        if len(assignment) != len(self.domains):
+            return False
         return True
 
     def consistent(self, assignment):
@@ -204,27 +188,22 @@ class CrosswordCreator():
         
         # Check the length of words and variable
         for variable in assignment.keys():
-            for word in assignment[variable]:
-                if len(word) != variable.length:
-                    return False
+            word1 = assignment[variable]
+            if len(word1) != variable.length:
+                return False
         
             # Check for conflict in char and Uniqueness
-            for neighbour in self.crossword.neighbors(variable):
-                overlap = self.crossword.overlaps[variable, neighbour]
+            for var in assignment:
+                word2 = assignment[var]
+                if variable != var:
+                    if word1 == word2:
+                        return False
 
-                for word in assignment[variable]:
-                    if (neighbour in assignment.keys()) and (overlap is not None):
-
-                        # All words in neighbour value
-                        for neighbour_word in assignment[neighbour]:
-                        
-                            # Check for conflict in char
-                            if (word[overlap[0]] != neighbour_word[overlap[1]]):
-                                return False
-                            
-                            # Check for uniqueness
-                            if word == neighbour_word:
-                                return False
+                    overlap = self.crossword.overlaps[variable, var]
+                    if overlap is not None:
+                        i, j = overlap
+                        if word1[i] != word2[j]:
+                            return False
         
         return True
 
@@ -252,8 +231,8 @@ class CrosswordCreator():
                     if word[overlap[0]] != neighbour_word[overlap[1]]:
                         cnt += 1
                 
-                # Add the word and its counter to dic
-                counter_dic[word] = cnt
+            # Add the word and its counter to dic
+            counter_dic[word] = cnt
 
         result = sorted(counter_dic, key=counter_dic.get)
         return result
@@ -266,7 +245,7 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        
+        #"""
         # Make a list of unassigned variables
         unassigned_variables = dict()
         for var in self.domains.keys():
@@ -277,10 +256,10 @@ class CrosswordCreator():
         unassigned_variable_sorted = sorted(unassigned_variables, key=unassigned_variables.get)
 
         # Variables with same values in domains
-        same_domains = [unassigned_variable_sorted.keys()[0]]
-        for var in unassigned_variable_sorted.keys():
-            if var = same_domains[0]: continue
-            if len(unassigned_variable_sorted[var]) == len(unassigned_variable_sorted[same_domains[0]]):
+        same_domains = [unassigned_variable_sorted[0]]
+        for var in unassigned_variable_sorted:
+            if var == same_domains[0]: continue
+            if unassigned_variables[var] == unassigned_variables[same_domains[0]]:
                 same_domains.append(var)
 
         if len(same_domains) == 1:
@@ -292,6 +271,11 @@ class CrosswordCreator():
             
             result = sorted(result, key=result.get, reverse=True)
             return result[0]
+        """
+        for variable in self.crossword.variables:
+            if variable not in assignment.keys():
+                return variable
+        """
 
     def backtrack(self, assignment):
         """
@@ -302,23 +286,22 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        
+
         # Check if assignment is complete
         if self.assignment_complete(assignment):
             return assignment
         
         # Assign unassigned var
         var = self.select_unassigned_variable(assignment)
-
         for value in self.order_domain_values(var, assignment):
-            assignment.update({var : value})
+            assignment[var] = value
             if self.consistent(assignment):
                 result = self.backtrack(assignment)
-                if result is not None:
+                if result is None:
+                    assignment[var] = None
+                else:
                     return result
-                
-                assignment.remove(var)
-        
+
         return None
 
 
