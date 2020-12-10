@@ -121,12 +121,15 @@ class CrosswordCreator():
         j = self.crossword.overlaps[x, y][1]
 
         flag = 0
+        flag1 = 0
         for word1 in self.domains[x]:
             for word2 in self.domains[y]:
-                if word1[i] != word2[j]:
-                    self.domains[x].remove(word1)
-                    flag = 1
-                    break
+                if word1[i] == word2[j]:
+                   flag1 = 1
+                   break
+            if flag1 != 1:
+                self.domains[x].remove(word1)
+                flag = 1
         
         # Check if revision is made
         if flag == 0:
@@ -143,7 +146,10 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        
+        # Check if the 'arcs' is empty
+        if arcs = None:
+            arcs
 
     def assignment_complete(self, assignment):
         """
