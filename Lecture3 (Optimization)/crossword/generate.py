@@ -149,7 +149,39 @@ class CrosswordCreator():
         
         # Check if the 'arcs' is empty
         if arcs = None:
-            arcs
+            arcs = list()
+            for variable in self.crossword.variables:
+                for var in seld.crossword.variables:
+                    if variable != var:
+                        arcs.append((variable, var))
+
+        # Loop untile queue is empty
+        while(len(arcs) != 0):
+
+            # Revise arc in arcs
+            for arc in arcs:
+                result = Revise(arc[0], arc[1])
+                
+                # If the arc has been revised
+                if result:
+                   
+                    # Check if Domain is empty
+                    if len(self.domains[arc[0]]) == 0:
+                        return False
+                    
+                    # Add all neighbours to the arcs
+                    for neighbour in self.crossword.neighbors(arc[0]):
+                        # Skip arc[1] from neighbour
+                        if neighbour == arc[1]: continue
+                        else:
+                            arcs.append((arc[0], neighbour))
+                            arcs.append((neighbour, arc[0]))
+                
+                # Remove arc from arcs
+                arcs.remove(arc)
+            
+        # Successfully checked all arcs are consistent
+        return True
 
     def assignment_complete(self, assignment):
         """
