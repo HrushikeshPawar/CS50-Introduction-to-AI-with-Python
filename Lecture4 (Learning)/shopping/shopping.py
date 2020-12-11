@@ -102,7 +102,7 @@ def load_data(filename):
             evidence[i-1].append(1 if rough_evidence[16] is True else 0)
             
             # Enter numeric value of labels
-            labels.append(1 if rough_evidence is True else 0)
+            labels.append(1 if rough_label == 'TRUE' else 0)
 
     return (evidence, labels)
 
@@ -116,11 +116,8 @@ def train_model(evidence, labels):
     model = KNeighborsClassifier(n_neighbors = 1)
     # model = Perceptron()
 
-    # Split Training-Testing Data
-    X_train, X_test, y_train, y_test = train_test_split(evidence, labels, test_size=0.4)
-
     # Fit Model and return
-    return model.fit(X_train, y_train)
+    return model.fit(evidence, labels)
 
 def evaluate(labels, predictions):
     """
@@ -138,7 +135,31 @@ def evaluate(labels, predictions):
     actual negative labels that were accurately identified.
     """
     
+    # Initialize the counters for sensitivity and specificity
+    sensitivity_counter = 0
+    specificity_counter = 0
+    positive_counter = 0
+    negative_counter = 0
     
+    # Check all predicitions
+    for i in range(len(labels)):
+        if labels[i] == 1:
+            positive_counter += 1
+        else:
+            negative_counter += 1
+        
+        if (labels[i] == 1) and (labels[i] == predictions[i]):
+            sensitivity_counter += 1
+        
+        if (labels[i] == 0) and (labels[i] == predictions[i]):
+            specificity_counter += 1
+    
+    # Calculate sensitivity and specificity
+    sensitivity = sensitivity_counter / positive_counter
+    specificity = specificity_counter / negative_counter
+
+    return (sensitivity, specificity)
+
 
 
 if __name__ == "__main__":
