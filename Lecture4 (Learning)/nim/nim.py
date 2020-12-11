@@ -103,16 +103,13 @@ class NimAI():
         """
         
         # Convert state - list to a tuple
-        state = set(state)
-
-        # Get value from self.q
-        value = self.q[(state, action)]
+        state = tuple(state)
 
         # Retrun appropiate value
-        if value is None:
-            return 0
+        if (state, action) in self.q.keys():
+            return self.q[(state, action)]
         else:
-            return value
+            return 0
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -129,15 +126,18 @@ class NimAI():
         `alpha` is the learning rate, and `new value estimate`
         is the sum of the current reward and estimated future rewards.
         """
-        
-        # Get old q_value 
-        old_q_value = get_q_value(state, action)
 
         # Convert list state to tuple
-        state = set(state)
+        state = tuple(state)
+        
+        # Get old q_value 
+        if (state, action) in self.q.keys():
+            old_q_value = get_q_value(state, action)
+        else:
+            old_q_value = 0
 
         # Update q_value by given formula
-        self.q[(state, action)] = old_q_value + alpha * (reward + future_rewards - old_q_value)
+        self.q[(state, action)] = old_q_value + self.alpha * (reward + future_rewards - old_q_value)
 
     def best_future_reward(self, state):
         """
@@ -149,7 +149,27 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
-        raise NotImplementedError
+
+        # Set of all available actions for given set and convert state to tuple
+        actions = available_actions(state)
+        state = tuple(state)
+
+        # No actions available return 0
+        if actions = set():
+            return 0
+
+        # Initialize max_value counter and check every state action pair
+        max_q_value = 0
+        for action in actions:
+            if (state, action) not in self.q:
+                q_value = 0
+            else:
+                q_value = self.q[(state, action)]
+
+            if max_q_value < q_value:
+                max_q_value = q_value
+        
+        return max_q_value
 
     def choose_action(self, state, epsilon=True):
         """
