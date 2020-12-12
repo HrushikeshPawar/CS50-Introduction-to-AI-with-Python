@@ -129,15 +129,9 @@ class NimAI():
 
         # Convert list state to tuple
         state = tuple(state)
-        
-        # Get old q_value 
-        if (state, action) in self.q.keys():
-            old_q_value = get_q_value(state, action)
-        else:
-            old_q_value = 0
 
         # Update q_value by given formula
-        self.q[(state, action)] = old_q_value + self.alpha * (reward + future_rewards - old_q_value)
+        self.q[(state, action)] = old_q + self.alpha * (reward + future_rewards - old_q)
 
     def best_future_reward(self, state):
         """
@@ -150,26 +144,21 @@ class NimAI():
         `state`, return 0.
         """
 
-        # Set of all available actions for given set and convert state to tuple
-        actions = available_actions(state)
-        state = tuple(state)
-
-        # No actions available return 0
-        if actions = set():
-            return 0
+        # Set of all available actions for given set
+        available_actions = Nim.available_actions
+        actions = list(available_actions(state))
 
         # Initialize max_value counter and check every state action pair
-        max_q_value = 0
+        best_reward = 0
         for action in actions:
-            if (state, action) not in self.q:
-                q_value = 0
-            else:
-                q_value = self.q[(state, action)]
+            q_value = self.get_q_value(state, action)
 
-            if max_q_value < q_value:
-                max_q_value = q_value
+            if q_value > best_reward:
+                best_reward = q_value
+            else:
+                continue
         
-        return max_q_value
+        return best_reward
 
     def choose_action(self, state, epsilon=True):
         """
@@ -186,8 +175,39 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        raise NotImplementedError
 
+        # Set of available action
+        available_actions = Nim.available_actions
+        actions = list(available_actions(state))
+        
+        # Caculate best_action best action
+        best_q_value = 0
+        best_action = list(actions)[0]
+
+        # Loop through all available actions to return best action
+        for action in actions:
+            q_value = self.get_q_value(state, action)
+            
+            if best_q_value < q_value:
+                best_action = action
+                best_q_value = q_value
+    
+
+        # If epsilon is True use epsilon-greedy algorithm
+        if epsilon == True:
+
+            # Calculate weights depending on epsilon
+            total_actions = len(actions)
+            prob = self.epsilon / total_actions
+            weights = [(1 - self.epsilon + prob) if action == best_action else prob for  action in actions]
+            
+            choice = random.choices(actions, weights=weights, k=1)[0]
+            
+            return choice
+        
+        # If epsilon is False use greed algorithm
+        else:
+            return best_action
 
 def train(n):
     """
