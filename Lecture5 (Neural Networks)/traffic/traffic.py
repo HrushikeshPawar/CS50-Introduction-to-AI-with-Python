@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 EPOCHS = 10
 IMG_WIDTH = 30
 IMG_HEIGHT = 30
-NUM_CATEGORIES = 3
+NUM_CATEGORIES = 43
 TEST_SIZE = 0.4
 
 
@@ -42,7 +42,6 @@ def main():
         filename = sys.argv[2]
         model.save(filename)
         print(f"Model saved to {filename}.")
-
 
 def load_data(data_dir):
     """
@@ -82,9 +81,12 @@ def load_data(data_dir):
             
             # Store image in list "images" and label in list "labels"
             images.append(img)
-            labels.append(dirpath[-1])
-    
+            labels.append(dirpath.split(os.sep)[-1])
+
+        print("Category Loaded : ", dirpath.split(os.sep)[-1])
+
     # Return the images and labels
+    print("\n Loaded a total of", len(labels), "from", len(set(labels)), "Categories !!!")
     return (images, labels)    
 
 def get_model():
@@ -93,8 +95,49 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    raise NotImplementedError
+    
+    # Create Convolutional Neural Network
+    model = tf.keras.models.Sequential([
 
+        # Convolutional Layer with 32 filters using 3x3 kernel
+        tf.keras.layers.Conv2D(
+            64, (3, 3), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ),
+
+        # Max-pooling layer
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        # Convolutional Layer with 32 filters using 3x3 kernel
+        tf.keras.layers.Conv2D(64, (3, 3), activation="relu"),
+
+        # Max-pooling layer
+        # tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        # Convolutional Layer with 32 filters using 3x3 kernel
+        # tf.keras.layers.Conv2D(32, (3, 3), activation="relu"),
+
+        # Flatten units
+        tf.keras.layers.Flatten(),
+
+        # Add a hidden layer with dropout
+        # tf.keras.layers.Dense(128, activation="relu"),
+        # tf.keras.layers.Dense(128, activation="relu"),
+        # tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dropout(0.5),
+
+        # Add output layer for all signs i.e NUM_CATEGORIES
+        tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax")
+    ])
+    print(model.summary())
+    # Compile Model
+    model.compile(
+        optimizer="adam",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"]
+    )
+
+    # Return compiled model
+    return model
 
 if __name__ == "__main__":
     main()
