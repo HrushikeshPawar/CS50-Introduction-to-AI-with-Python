@@ -61,8 +61,6 @@ def load_files(directory):
             doc = open(os.path.join(dirpath, document), "r")
             documents_data[document] = doc.read()
 
-    print()
-    print(f"{len(documents_data.keys())} files loaded from the directory.")
     return documents_data
 
 
@@ -107,8 +105,6 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
-    print()
-    print("Tokenization Completed")
     
     # Collect all words in the a single list
     all_words = list()
@@ -141,8 +137,6 @@ def compute_idfs(documents):
         idfs[word] = log(len(documents.keys()) / cnt)
 
     # Return the idfs values
-    print()
-    print("Completed Inverse Document Frequency Calculations\n")
     return idfs
 
 
@@ -192,7 +186,38 @@ def top_sentences(query, sentences, idfs, n):
     the query, ranked according to idf. If there are ties, preference should
     be given to sentences that have a higher query term density.
     """
-    raise NotImplementedError
+    
+    sentences_scores = dict()
+
+    for sentence, words in sentences.items():
+
+        # Words in query
+        query_words = list(query)
+
+        # Calculate IDF value of sentences
+        idf = 0
+        for word in query_words:
+
+            # Skip if word not in sentence
+            if word not in words:
+                continue
+            
+            # Update the IDF value of sentence
+            idf += idfs[word]
+
+        # Calculate query term density of the sentence
+        num_words_in_query = len(query_words)
+        query_term_density = num_words_in_query / len(words)
+
+        # Update the sentence score with term density
+        sentences_scores[sentence] = {'idf' : idf, 'qtd' : query_term_density}
+    
+    # Rank the sentence first by IDF then by QTD
+    sorted_sentences = sorted(sentences_scores.items(), key=lambda x: (x[1]['idf'], x[1]['qtd']), reverse=True)
+
+    # Return first n terms
+    final_list = [sentence[0] for sentence in sorted_sentences]
+    return final_list[:n]
 
 
 if __name__ == "__main__":
