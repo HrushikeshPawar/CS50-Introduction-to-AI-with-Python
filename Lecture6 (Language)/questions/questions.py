@@ -62,7 +62,7 @@ def load_files(directory):
             documents_data[document] = doc.read()
 
     print()
-    print("All files loaded from the directory.")
+    print(f"{len(documents_data.keys())} files loaded from the directory.")
     return documents_data
 
 
@@ -96,7 +96,6 @@ def tokenize(document):
         words.remove(word)
 
     # Return the remaining words
-    print("Tokenization Completed")
     return words
 
 
@@ -108,6 +107,8 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
+    print()
+    print("Tokenization Completed")
     
     # Collect all words in the a single list
     all_words = list()
@@ -141,7 +142,7 @@ def compute_idfs(documents):
 
     # Return the idfs values
     print()
-    print("Completed Inverse Document Frequency Calculations")
+    print("Completed Inverse Document Frequency Calculations\n")
     return idfs
 
 
@@ -152,7 +153,35 @@ def top_files(query, files, idfs, n):
     to their IDF values), return a list of the filenames of the the `n` top
     files that match the query, ranked according to tf-idf.
     """
-    raise NotImplementedError
+    
+    # Initialize tf_ifds count dic
+    tf_idfs = dict()
+
+    # Loop through all documents in files
+    for doc in files:
+
+        # Calculate tf-idfs values for all words in query
+        score = 0
+        for word in query:
+            
+            # Check if word is in document
+            if word not in files[doc]:
+                continue
+
+            score += files[doc].count(word) * idfs[word]
+        
+        # Update the tf-idfs score in dic
+        tf_idfs[doc] = score
+
+    # Sort the tf_idfs dic by the scores
+    tf_idfs = sorted(tf_idfs.items(), key=lambda x: x[1], reverse=True)
+
+    # Create list of top "n" files
+    top_list = list()
+    for i in range(n):
+        top_list.append(tf_idfs[i][0])
+    
+    return top_list
 
 
 def top_sentences(query, sentences, idfs, n):
