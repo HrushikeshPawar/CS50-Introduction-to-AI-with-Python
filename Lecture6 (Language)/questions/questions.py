@@ -2,6 +2,7 @@ import nltk
 import sys
 import os
 import string
+from math import log
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -44,6 +45,7 @@ def main():
     for match in matches:
         print(match)
 
+
 def load_files(directory):
     """
     Given a directory name, return a dictionary mapping the filename of each
@@ -59,7 +61,10 @@ def load_files(directory):
             doc = open(os.path.join(dirpath, document), "r")
             documents_data[document] = doc.read()
 
+    print()
+    print("All files loaded from the directory.")
     return documents_data
+
 
 def tokenize(document):
     """
@@ -91,7 +96,9 @@ def tokenize(document):
         words.remove(word)
 
     # Return the remaining words
+    print("Tokenization Completed")
     return words
+
 
 def compute_idfs(documents):
     """
@@ -101,7 +108,41 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
-    raise NotImplementedError
+    
+    # Collect all words in the a single list
+    all_words = list()
+
+    # Loop through all the documents
+    for filename in documents:
+
+        # Add all words in document in list "all_words"
+        for word in documents[filename]:
+            all_words.append(word)
+
+    # Get all unique words in the "all_words"
+    unique_words = set(all_words)
+
+    # IDFs dictionary
+    idfs = dict()
+
+    # Calculate the idfs of "unique words"
+    for word in unique_words:
+
+        # Initialize the word counter
+        cnt = 0
+
+        # Increase the counter if the word appears in the document
+        for doc in documents:
+            if word in documents[doc]:
+                cnt += 1
+
+        # Calculate the Inverse Documnet Frequency
+        idfs[word] = log(len(documents.keys()) / cnt)
+
+    # Return the idfs values
+    print()
+    print("Completed Inverse Document Frequency Calculations")
+    return idfs
 
 
 def top_files(query, files, idfs, n):
