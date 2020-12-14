@@ -1,6 +1,7 @@
 import nltk
 import sys
 import os
+import string
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -43,7 +44,6 @@ def main():
     for match in matches:
         print(match)
 
-
 def load_files(directory):
     """
     Given a directory name, return a dictionary mapping the filename of each
@@ -69,8 +69,29 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    raise NotImplementedError
+    
+    # Initialize required lists
+    words = nltk.word_tokenize(document.lower())
+    remove_words = list()
 
+    # Check every word in the document
+    for word in words:
+
+        # Check if word is a stopwords
+        if word in nltk.corpus.stopwords.words("english"):
+            remove_words.append(word)
+        
+        # Check if word is a punctuation
+        elif (word in string.punctuation) or (word == "=="):
+            remove_words.append(word)
+        
+
+    # Remove all remove_words from the list "words"
+    for word in remove_words:
+        words.remove(word)
+
+    # Return the remaining words
+    return words
 
 def compute_idfs(documents):
     """
