@@ -12,6 +12,6 @@ All Project Material From [CS50 Course Introduction to AI with Python](https://c
 |  3   | Optimisation | [Crossword](Lecture3%20(Optimisation)/crossword) | Generate crossword puzzles | [Link](https://www.youtube.com/watch?v=J6sIdvysr1w) |
 |  4   | Learning     | [Shopping](Lecture4%20(Learning)/shopping) | Predict whether online shopping customers will complete a purchase | [Link](https://www.youtube.com/watch?v=Ajs1CN76JGs) |
 |  4   | Learning    | [Nim - Game](Lecture4%20(Leaning)/nim) | AI that teaches itself to play Nim through reinforecement learning | [Link](https://www.youtube.com/watch?v=Z58joL6GKX8) |
-|  5   | Neural Networks | [Traffic](Lecture5%20(Neural Networks)/traffic) | Neural net to identify which traffic sign appears in a photograph | [Link](https://www.youtube.com/watch?v=jzYOVZbO8jE) |
+|  5   | Neural Networks | [Traffic](Lecture5%20(Neural%20Networks)/traffic) | Neural net to identify which traffic sign appears in a photograph | [Link](https://www.youtube.com/watch?v=jzYOVZbO8jE) |
 |  6   | Language |  [Parser](Lecture6%20(Language)/parser) | Parse sentences and extract noun phrases | [Link](https://www.youtube.com/watch?v=JJbgQzJ-NvU) |
 |  6   | Language |  [ Questions](Lecture6%20(Language)/questions) | AI to answer questions given corpus of text | [Link](https://www.youtube.com/watch?v=ku6p9hSVj4U) |
