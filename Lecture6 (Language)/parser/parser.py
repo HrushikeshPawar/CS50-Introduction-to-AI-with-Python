@@ -28,7 +28,6 @@ PP -> P | P NP
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
 parser = nltk.ChartParser(grammar)
 
-
 def main():
 
     # If filename specified, read sentence from file
@@ -60,7 +59,6 @@ def main():
         print("Noun Phrase Chunks")
         for np in np_chunk(tree):
             print(" ".join(np.flatten()))
-
 
 def preprocess(sentence):
     """
